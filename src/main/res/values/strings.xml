@@ -1,0 +1,10 @@
+<resources>
+  <string name="app_name">Umbrella</string>
+    <string name="current_weather_text">0\u00B0</string>
+  <string name="hourly_time">4:00 PM</string>
+  <string name="hourly_degrees">8\u00B0</string>
+    <string name="zipcode">Enter New Zipcode</string>
+    <string name="dialog_title_name">Zipcode Dialog</string>
+    <string name="current_sky_text">Clear</string>
+    <string name="dialog_radiotitle_name">Choose a Unit of Temperature</string>
+</resources>

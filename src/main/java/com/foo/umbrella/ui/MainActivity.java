@@ -87,41 +87,24 @@ public class MainActivity extends AppCompatActivity {
 
     boolean checkCelsius = false;
 
-    /*private String hourlyList[] =
-            {
-                    "4:00 PM", "5:00 PM", "6:00 PM", "7:00 PM",
-                    "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM",
-                    "5:00 PM"
-            };*/
-
-    private int iconId[] =
-            {
-                    R.drawable.weather_cloudy, R.drawable.weather_fog, R.drawable.weather_rainy, R.drawable.weather_rainy,
-                    R.drawable.weather_sunny, R.drawable.weather_sunny, R.drawable.weather_fog, R.drawable.weather_fog,
-                    R.drawable.weather_snowy
-            };
-
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         appBar = (RelativeLayout) findViewById(appbar_layout);
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-        //getSupportActionBar().setTitle("Marietta, GA");
 
         currentWeatherTV = (TextView) findViewById(R.id.current_weather_tv);
         skyTV = (TextView) findViewById(R.id.current_sky_tv);
 
         weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String newValue = weatherPref.getString("zipcodeData", "");
-        /*SharedPreferences.Editor editor = weatherPref.edit();
-        editor.remove("zipcodeData");
-        editor.apply();*/
 
         if (zipcode == null && newValue == "") {
             getInitialZipcode();
-        }else if (zipcode == null && newValue != "") {
+        } else if (zipcode == null && newValue != "") {
             zipcode = newValue;
             Log.d(TAG, "onCreate: " + zipcode);
         }
@@ -143,8 +126,6 @@ public class MainActivity extends AppCompatActivity {
         tomRecyclerView.setLayoutManager(layoutManager2);
         weatherAdapter = new WeatherAdapter(MainActivity.this, weatherDataList);
 
-
-
         //initViews();
         initRandomService();
 
@@ -159,34 +140,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         getWeatherData(zipcode);
-        Log.d(TAG, "Current Time: " +  formedDate);
-        Log.d(TAG, "Current Time in Date instance: " +  date1);
-
-        /*DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
-        String formatDateTime = fc.getDateTime().format(formatter);
-        String AdapterDate = formatDateTime;
-
-        Log.d(TAG, "Current Time from Adapter: " +  AdapterDate);*/
-
-
-    }
-
-    public String getCurrentTime() {
-        return formedDate;
-    }
-
-    @Override
-    protected void onStart() {
-        /*Intent intent = new Intent();
-
-        getSupportActionBar().setTitle(intent.getStringExtra("zipcode"));*/
-        /*if (zipcode == null) {
-            getInitialZipcode();
-        }*/
-        //zipcode = intent.getStringExtra("zipcode");
-        //getWeatherData(zipcode);
-
-        super.onStart();
+        /*Log.d(TAG, "Current Time: " +  formedDate);
+        Log.d(TAG, "Current Time in Date instance: " +  date1);*/
     }
 
     private void initRandomService() {
@@ -197,16 +152,11 @@ public class MainActivity extends AppCompatActivity {
                 .create(WeatherService.class);
     }
 
-  @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-    /*private void initViews(WeatherData wd) {
-        String fullName = wd.getCurrentObservation().getDisplayLocation().getFullName();
-        String tempF = wd.getCurrentObservation().getTempFahrenheit();
-    }*/
 
     private void getWeatherData(String zipCode) {
         checkCelsius = SettingsAdapter.celsiusSelected();
@@ -226,8 +176,6 @@ public class MainActivity extends AppCompatActivity {
                     skyTV.setText(currentObservation);
                     weatherDataList = response.body().getForecast();
                     weatherAdapter.updateDataSet(weatherDataList, currentObservation);
-                    //weatherAdapter = new WeatherAdapter(weatherDataList, currentObservation);
-                    //List<WeatherData> weatherData = new ArrayList<>();
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
                     String formatDateTime = response.body().getForecast().get(arrayCount).getDateTime().format(formatter);
@@ -243,39 +191,27 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         String newDate = dateFormat.format(date2);
-                        Log.d(TAG, "date2" +  date2);
-                        Log.d(TAG, "adapterDate: " + newDate);
-
-                        if(date1.before(date2)){
+                        /*Log.d(TAG, "date2" +  date2);
+                        Log.d(TAG, "adapterDate: " + newDate);*/
+                        if (date1.before(date2)) {
                             recyclerView.setAdapter(weatherAdapter);
                             break;
-                        }else if(date2.after(date1)){
+                        } else if (date2.after(date1)) {
                             tomRecyclerView.setAdapter(weatherAdapter);
-                            Log.d(TAG, "Date1 is before Date2");
+                            /*Log.d(TAG, "Date1 is before Date2");*/
                             break;
                         }
                     }
 
-
-
-                    Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
-                    Log.d(TAG, "Current Time from Adapter in Date instance: " +  date2);
-                    String datefromAdap;
-
-                    /*datefromAdap = response.body().getForecast().get(i).getDateTime().toString();
-                    Log.d(TAG, "onResponse: " + datefromAdap);
-
-                    if(date2 != null && date2.after(date1)){
-                        Log.d(TAG, "Date1 is before Date2");
-                    }*/
-
+                    /*Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
+                    Log.d(TAG, "Current Time from Adapter in Date instance: " +  date2);*/
 
                     double result;
                     result = parseDouble(response.body().getCurrentObservation().getTempFahrenheit());
 
                     if (result > 60) {
                         appBar.setBackgroundColor(getResources().getColor(R.color.weather_warm));
-                    } else if(result < 60) {
+                    } else if (result < 60) {
                         appBar.setBackgroundColor(getResources().getColor(R.color.weather_cool));
                     }
                 } else {

@@ -7,7 +7,7 @@ import com.squareup.moshi.Moshi;
 
 /**
  * Represents a "display_location" returned from Weather Underground
- *
+ * <p>
  * Does not include all available only data- only potentially useful fields are included
  */
 @AutoValue
@@ -20,14 +20,17 @@ public abstract class DisplayLocation {
      * @return a String in the form of "City, StateAbbreviation". Ex. "Minneapolis, MN"
      */
     @Json(name = "full")
-    public abstract String getFullName(); abstract String getCity();
+    public abstract String getFullName();
+
+    abstract String getCity();
 
     @Json(name = "state")
     public abstract String getStateAbbreviation();
 
-    @Json(name ="state_name")
+    @Json(name = "state_name")
     public abstract String getStateName();
 
     public abstract String getCountry();
+
     public abstract String getZip();
 }

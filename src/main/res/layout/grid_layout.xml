@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/hourly_tv"
@@ -16,21 +17,21 @@
         android:id="@+id/weather_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/weather_cloudy"
+        android:layout_alignStart="@+id/hourly_tv"
+        android:layout_below="@+id/hourly_tv"
         android:layout_marginEnd="20dp"
         android:layout_marginLeft="12dp"
-        android:layout_below="@+id/hourly_tv"
-        android:layout_alignStart="@+id/hourly_tv"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        app:srcCompat="@drawable/weather_cloudy" />
 
     <TextView
         android:id="@+id/hourly_degrees"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="18dp"
+        android:layout_alignStart="@+id/hourly_tv"
         android:layout_below="@+id/weather_img"
-        android:layout_alignStart="@+id/hourly_tv" />
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="10dp" />
 
 
 </RelativeLayout>

@@ -42,7 +42,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
 
     private String formatDateTime2;
 
-    boolean checkCelsius = false;
+    private boolean checkCelsius = false;
     SharedPreferences weatherPref;
 
     private int iconId[] =

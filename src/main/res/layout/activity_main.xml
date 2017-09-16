@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -12,9 +11,9 @@
         android:layout_height="wrap_content">
 
         <RelativeLayout
+            android:id="@+id/appbar_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/appbar_layout">
+            android:layout_height="wrap_content">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/my_toolbar"
@@ -28,31 +27,30 @@
                 app:titleTextColor="@android:color/white">
 
 
-
             </android.support.v7.widget.Toolbar>
 
-                <TextView
-                    android:id="@+id/current_weather_tv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/my_toolbar"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textColor="#FFF"
-                    android:text="@string/current_weather_text"
-                    android:textSize="90sp" />
+            <TextView
+                android:id="@+id/current_weather_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_toolbar"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/current_weather_text"
+                android:textColor="#FFF"
+                android:textSize="90sp" />
 
-                <TextView
-                    android:id="@+id/current_sky_tv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/current_weather_tv"
-                    android:textColor="#FFF"
-                    android:gravity="center"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="@string/current_sky_text"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/current_sky_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/current_weather_tv"
+                android:layout_marginBottom="20dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:text="@string/current_sky_text"
+                android:textColor="#FFF"
+                android:textSize="20sp" />
 
         </RelativeLayout>
 
@@ -63,15 +61,15 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
                 android:layout_margin="10dp"
+                android:padding="5dp"
                 card_view:cardCornerRadius="25dp">
 
                 <RelativeLayout
@@ -80,25 +78,25 @@
 
                     <TextView
                         android:id="@+id/today_hourly_cv"
-                        android:text="Today"
-                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:padding="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:text="Today"
+                        android:textStyle="bold" />
 
                     <View
                         android:layout_width="match_parent"
+                        android:layout_height="1dp"
                         android:layout_alignBottom="@id/today_hourly_cv"
-                        android:background="@android:color/darker_gray"
-                        android:layout_height="1dp" />
+                        android:background="@android:color/darker_gray" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/weather_today_recycler_view"
-                        android:layout_marginTop="38dp"
-                        android:paddingBottom="16dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="38dp"
+                        android:paddingBottom="16dp">
 
                     </android.support.v7.widget.RecyclerView>
 
@@ -110,8 +108,8 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
                 android:layout_margin="10dp"
+                android:padding="5dp"
                 card_view:cardCornerRadius="25dp">
 
                 <RelativeLayout
@@ -120,26 +118,26 @@
 
                     <TextView
                         android:id="@+id/tomorrow_hourly_cv"
-                        android:text="Tomorrow"
-                        android:textStyle="bold"
-                        android:layout_margin="5dp"
-                        android:padding="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left" />
+                        android:layout_gravity="left"
+                        android:layout_margin="5dp"
+                        android:padding="10dp"
+                        android:text="Tomorrow"
+                        android:textStyle="bold" />
 
                     <View
                         android:layout_width="fill_parent"
+                        android:layout_height="1dp"
                         android:layout_alignBottom="@id/tomorrow_hourly_cv"
-                        android:background="@android:color/darker_gray"
-                        android:layout_height="1dp" />
+                        android:background="@android:color/darker_gray" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/weather_tomorrow_recycler_view"
-                        android:layout_marginTop="38dp"
-                        android:paddingBottom="16dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="38dp"
+                        android:paddingBottom="16dp">
 
                     </android.support.v7.widget.RecyclerView>
 

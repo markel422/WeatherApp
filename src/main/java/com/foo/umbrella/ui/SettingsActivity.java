@@ -23,7 +23,7 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private static final String TAG  = SettingsActivity.class.getSimpleName() + "_TAG";
+    private static final String TAG = SettingsActivity.class.getSimpleName() + "_TAG";
     private static final String WEATHERPREF = "weatherZipUnits";
 
     SharedPreferences weatherPref;
@@ -63,10 +63,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         settings_title_txt = (TextView) findViewById(R.id.settings_title_tv);
         settings_txt = (TextView) findViewById(R.id.settings_tv);
-
-
-
-        Log.d(TAG, "onCreate: ");
     }
 
     @Override
@@ -79,7 +75,6 @@ public class SettingsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Log.d(TAG, "SharedPreferences inside Settings: " + weatherPref.getString("unitsData", ""));
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(intent);
                 break;

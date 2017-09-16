@@ -32,14 +32,14 @@ import java.util.List;
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHolder> {
 
     private static final String TAG = SettingsAdapter.class.getSimpleName() + "_TAG";
-    private static final String WEATHERPREF = "weatherZipUnits";
 
     private Context context;
     private String settings_title[];
     private String settings[];
     private static boolean isCelsius = false;
 
-    public SettingsAdapter() {}
+    public SettingsAdapter() {
+    }
 
     public SettingsAdapter(Context context, String[] setting_title, String[] setting) {
         this.context = context;
@@ -62,7 +62,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
 
     @Override
     public void onBindViewHolder(MyHolder holder, int position) {
-
 
         holder.settings_title_txt.setText(settings_title[position]);
         holder.settings_txt.setText(settings[position]);
@@ -110,14 +109,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
                         dialog = new Dialog(context);
                         dialog.setTitle("Choose Units of Temperature");
                         dialog.setContentView(R.layout.units_radiobutton_layout);
-                        List<String> stringList=new ArrayList<>();  // here is list
+                        List<String> stringList = new ArrayList<>();  // here is list
                         stringList.add("Fahrenheit");
                         stringList.add("Celsius");
 
                         RadioGroup rg = (RadioGroup) dialog.findViewById(R.id.radio_group);
-                        RadioButton rb = null;
+                        RadioButton rb;
 
-                        for(int i=0;i<stringList.size();i++){
+                        for (int i = 0; i < stringList.size(); i++) {
                             rb = new RadioButton(context); // dynamically creating RadioButton and adding to RadioGroup.
                             rb.setText(stringList.get(i));
                             rg.addView(rb);

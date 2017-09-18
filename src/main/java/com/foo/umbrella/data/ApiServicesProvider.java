@@ -2,6 +2,7 @@ package com.foo.umbrella.data;
 
 import android.app.Application;
 
+import com.foo.umbrella.data.app.AppScope;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.foo.umbrella.data.api.WeatherService;
 import com.squareup.moshi.Moshi;
@@ -9,6 +10,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
+import dagger.Module;
+import dagger.Provides;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -22,6 +25,8 @@ import static com.jakewharton.byteunits.DecimalByteUnit.MEGABYTES;
  * Provides {@link Picasso} and {@link WeatherService}
  * that are all ready setup and ready to use.
  */
+
+@Module
 public final class ApiServicesProvider {
 
     private static final int DISK_CACHE_SIZE = (int) MEGABYTES.toBytes(50);
@@ -47,6 +52,8 @@ public final class ApiServicesProvider {
                 .build();
     }
 
+    @AppScope
+    @Provides
     public Picasso getPicasso() {
         return picasso;
     }
@@ -54,11 +61,16 @@ public final class ApiServicesProvider {
     /**
      * @return an instance of the {@link WeatherService} service that is ready to use.
      */
+
+    @AppScope
+    @Provides
     public WeatherService getWeatherService() {
         return weatherService;
     }
 
-    private Retrofit provideRetrofit(OkHttpClient client, Moshi moshi) {
+    @AppScope
+    @Provides
+    Retrofit provideRetrofit(OkHttpClient client, Moshi moshi) {
         return new Retrofit.Builder()
                 .client(client)
                 .baseUrl("http://api.wunderground.com")
@@ -67,7 +79,9 @@ public final class ApiServicesProvider {
                 .build();
     }
 
-    private OkHttpClient createOkHttpClient(Application app) {
+    @AppScope
+    @Provides
+    OkHttpClient createOkHttpClient(Application app) {
         // Install an HTTP cache in the application cache directory.
         File cacheDir = new File(app.getCacheDir(), "http");
         Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
@@ -77,7 +91,9 @@ public final class ApiServicesProvider {
                 .build();
     }
 
-    private Moshi provideMoshi() {
+    @AppScope
+    @Provides
+    Moshi provideMoshi() {
         return new Moshi.Builder()
                 .add(new ForecastConditionAdapter())
                 .add(MoshiAdapterFactory.create())

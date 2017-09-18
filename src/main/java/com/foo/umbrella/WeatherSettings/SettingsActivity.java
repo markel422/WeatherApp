@@ -1,6 +1,5 @@
-package com.foo.umbrella.ui;
+package com.foo.umbrella.WeatherSettings;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,16 +9,13 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.foo.umbrella.R;
+import com.foo.umbrella.WeatherMain.MainActivity;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 

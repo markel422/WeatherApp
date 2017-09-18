@@ -2,10 +2,8 @@ package com.foo.umbrella.data.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.foo.umbrella.R;
-import com.foo.umbrella.ui.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,8 +167,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
     }
 
     public static class MyHolder extends RecyclerView.ViewHolder {
-        TextView settings_title_txt;
-        TextView settings_txt;
+        private TextView settings_title_txt;
+        private TextView settings_txt;
 
         LinearLayout linearLayout;
 

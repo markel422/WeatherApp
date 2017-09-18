@@ -12,18 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.foo.umbrella.R;
-import com.foo.umbrella.data.api.WeatherService;
-import com.foo.umbrella.data.model.CurrentObservation;
 import com.foo.umbrella.data.model.ForecastCondition;
-import com.foo.umbrella.data.model.WeatherData;
-import com.foo.umbrella.ui.MainActivity;
+import com.foo.umbrella.WeatherMain.MainActivity;
 import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
@@ -132,9 +126,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
     }
 
     public static class MyHolder extends RecyclerView.ViewHolder {
-        TextView hourly_txt;
-        ImageView weather_img;
-        TextView degrees_txt;
+        private TextView hourly_txt;
+        private ImageView weather_img;
+        private TextView degrees_txt;
 
         public MyHolder(View itemView) {
             super(itemView);

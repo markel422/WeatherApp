@@ -1,4 +1,4 @@
-package com.foo.umbrella.ui;
+package com.foo.umbrella.WeatherMain;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -23,16 +23,13 @@ import com.foo.umbrella.R;
 import com.foo.umbrella.data.ApiServicesProvider;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
 import com.foo.umbrella.data.adapter.WeatherAdapter;
-import com.foo.umbrella.data.api.WeatherService;
+import com.foo.umbrella.data.app.WeatherApp;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.data.model.WeatherData;
+import com.foo.umbrella.WeatherSettings.SettingsActivity;
 
-import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,17 +37,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.foo.umbrella.R.id.appbar_layout;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainView {
 
     private static final String TAG = MainActivity.class.getSimpleName() + "_TAG";
     private static final String WEATHERPREF = "weatherZipUnits";
@@ -62,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     Toolbar myToolbar;
 
     ApiServicesProvider provider;
-    WeatherService service;
     TextView currentWeatherTV;
     TextView skyTV;
 
@@ -76,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
 
     GridLayoutManager layoutManager;
     GridLayoutManager layoutManager2;
+
+    @Inject
+    MainPresenter presenter;
 
     String zipcode;
 
@@ -111,23 +110,16 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "Zipcode in MainActivity: " + zipcode);
 
-        provider = new ApiServicesProvider(getApplication());
-
         weatherDataList = new ArrayList<>(0);
-        weatherDataList2 = new ArrayList<>(0);
 
-        recyclerView = (RecyclerView) findViewById(R.id.weather_today_recycler_view);
-        tomRecyclerView = (RecyclerView) findViewById(R.id.weather_tomorrow_recycler_view);
+        setUpRecyclerView();
+        setUpDaggerUsersComponent();
 
-        layoutManager = new GridLayoutManager(MainActivity.this, 4);
-        layoutManager2 = new GridLayoutManager(MainActivity.this, 4);
-
-        recyclerView.setLayoutManager(layoutManager);
-        tomRecyclerView.setLayoutManager(layoutManager2);
-        weatherAdapter = new WeatherAdapter(MainActivity.this, weatherDataList);
+        presenter.init();
 
         //initViews();
-        initRandomService();
+        //initWeatherService();
+
 
         Date currentTime = Calendar.getInstance().getTime();
         SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
@@ -138,18 +130,28 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        showWeather(weatherDataList);
+        getWeather();
 
-        getWeatherData(zipcode);
+
+        //getWeatherData(zipcode);
         /*Log.d(TAG, "Current Time: " +  formedDate);
         Log.d(TAG, "Current Time in Date instance: " +  date1);*/
     }
 
-    private void initRandomService() {
-        service = new Retrofit.Builder()
-                .baseUrl(WeatherService.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(WeatherService.class);
+    private void initWeatherService() {
+        provider = new ApiServicesProvider(getApplication());
+    }
+
+    public void setUpRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.weather_today_recycler_view);
+
+        layoutManager = new GridLayoutManager(MainActivity.this, 4);
+
+        recyclerView.setLayoutManager(layoutManager);
+        weatherAdapter = new WeatherAdapter(MainActivity.this, new ArrayList<>(0));
+
+        recyclerView.setAdapter(weatherAdapter);
     }
 
     @Override
@@ -190,17 +192,9 @@ public class MainActivity extends AppCompatActivity {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        String newDate = dateFormat.format(date2);
-                        /*Log.d(TAG, "date2" +  date2);
+                        /*String newDate = dateFormat.format(date2);
+                        Log.d(TAG, "date2" +  date2);
                         Log.d(TAG, "adapterDate: " + newDate);*/
-                        if (date1.before(date2)) {
-                            recyclerView.setAdapter(weatherAdapter);
-                            break;
-                        } else if (date2.after(date1)) {
-                            tomRecyclerView.setAdapter(weatherAdapter);
-                            /*Log.d(TAG, "Date1 is before Date2");*/
-                            break;
-                        }
                     }
 
                     /*Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
@@ -275,7 +269,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Zipcode in Dialog: " + zipcode);
                 Log.d(TAG, "Zipcode in Shared Preferences within Dialog: " + weatherPref.getString("zipcodeData", ""));
-                getWeatherData(zipcode);
+                showWeather(new ArrayList<>(0));
+                //getWeatherData(zipcode);
                 dialog.cancel();
             }
         });
@@ -286,5 +281,37 @@ public class MainActivity extends AppCompatActivity {
                 dialog.cancel();
             }
         });
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showWeather(List<ForecastCondition> forecastList) {
+        weatherAdapter.updateDataSet(forecastList, currentObservation);
+    }
+
+    @Override
+    public void getWeather() {
+        presenter.getWeather(zipcode, myToolbar, weatherDataList, appBar);
+
+    }
+
+    @Override
+    public void obtainWeather(String observation, String state, List<ForecastCondition> dataList, String datetime) {
+        currentWeatherTV.setText(observation);
+        skyTV.setText(state);
+        weatherDataList = dataList;
+        adapterDate = datetime;
+    }
+
+    private void setUpDaggerUsersComponent() {
+        DaggerWeatherComponent.builder()
+                .appComponent(WeatherApp.getAppComponent())
+                .weatherModule(new WeatherModule(this, getApplication()))
+                .build()
+                .inject(this);
     }
 }

@@ -31,7 +31,7 @@ public class WeatherApiInteractor {
         this.weatherServiceService = weatherServiceService;
     }
 
-    public void setOnRandomResponseListener(OnWeatherResponseListener listener) {
+    public void setOnWeatherResponseListener(OnWeatherResponseListener listener) {
         this.listener = listener;
     }
 

@@ -13,7 +13,6 @@ import dagger.Provides;
  * Created by mike0 on 9/18/2017.
  */
 @Module
-@Component(modules = {WeatherModule.class})
 public class AppModule {
 
     private Application application;

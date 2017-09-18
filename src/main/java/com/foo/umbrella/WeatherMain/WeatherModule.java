@@ -13,7 +13,6 @@ import dagger.Provides;
  */
 
 @Module
-@Component(modules = {AppModule.class})
 public class WeatherModule {
 
     private final MainView mainView;

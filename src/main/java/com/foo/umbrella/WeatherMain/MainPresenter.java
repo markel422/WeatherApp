@@ -18,6 +18,8 @@ public interface MainPresenter {
 
     void init();
 
+    void getWeather();
+
     void getWeather(String zipcode, Toolbar myToolbar, List<ForecastCondition> weatherDataList, RelativeLayout appBar);
 
     Application getApplication();

@@ -6,15 +6,12 @@ import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.foo.umbrella.R;
 import com.foo.umbrella.data.ApiServicesProvider;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
-import com.foo.umbrella.data.adapter.WeatherAdapter;
 import com.foo.umbrella.data.api.WeatherApiInteractor;
-import com.foo.umbrella.data.app.AppScope;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.data.model.WeatherData;
 
@@ -25,7 +22,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.Provides;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,7 +54,12 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
 
     @Override
     public void init() {
-        interactor.setOnRandomResponseListener(this);
+        interactor.setOnWeatherResponseListener(this);
+    }
+
+    @Override
+    public void getWeather() {
+
     }
 
     @Override
@@ -129,6 +130,11 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
     }
 
     @Override
+    public Application getApplication() {
+        return application;
+    }
+
+    @Override
     public void onWeatherResponseDone(List<ForecastCondition> results) {
         mainView.showWeather(results);
     }
@@ -136,11 +142,5 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
     @Override
     public void onWeatherResponseError() {
         mainView.showError();
-    }
-
-    @AppScope
-    @Provides
-    public Application getApplication() {
-        return application;
     }
 }

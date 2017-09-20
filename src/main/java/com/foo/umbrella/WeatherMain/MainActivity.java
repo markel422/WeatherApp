@@ -25,6 +25,7 @@ import com.foo.umbrella.data.adapter.SettingsAdapter;
 import com.foo.umbrella.data.adapter.WeatherAdapter;
 import com.foo.umbrella.data.app.AppModule;
 import com.foo.umbrella.data.app.UmbrellaApp;
+import com.foo.umbrella.data.model.CurrentObservation;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.data.model.WeatherData;
 import com.foo.umbrella.WeatherSettings.SettingsActivity;
@@ -51,7 +52,6 @@ import static java.lang.Integer.parseInt;
 public class MainActivity extends AppCompatActivity implements MainView {
 
     private static final String TAG = MainActivity.class.getSimpleName() + "_TAG";
-    private static final String WEATHERPREF = "weatherZipUnits";
 
     SharedPreferences weatherPref;
 
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     Toolbar myToolbar;
 
-    ApiServicesProvider provider;
     TextView currentWeatherTV;
     TextView skyTV;
 
@@ -99,6 +98,32 @@ public class MainActivity extends AppCompatActivity implements MainView {
         currentWeatherTV = (TextView) findViewById(R.id.current_weather_tv);
         skyTV = (TextView) findViewById(R.id.current_sky_tv);
 
+        getInitialWeatherData();
+
+        setUpRecyclerView();
+        setUpDaggerUsersComponent();
+
+        weatherDataList = new ArrayList<>(0);
+
+        presenter.init();
+
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
+        formedDate = dateFormat.format(currentTime);
+
+        try {
+            date1 = dateFormat.parse(formedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        showWeather(weatherDataList, currentObservation);
+        getWeather();
+
+        /*Log.d(TAG, "Current Time: " +  formedDate);
+        Log.d(TAG, "Current Time in Date instance: " +  date1);*/
+    }
+
+    public void getInitialWeatherData() {
         weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String newValue = weatherPref.getString("zipcodeData", "");
 
@@ -110,38 +135,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
 
         Log.d(TAG, "Zipcode in MainActivity: " + zipcode);
-
-        weatherDataList = new ArrayList<>(0);
-
-        setUpRecyclerView();
-        setUpDaggerUsersComponent();
-
-        presenter.init();
-
-        //initViews();
-        //initWeatherService();
-
-
-        Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
-        formedDate = dateFormat.format(currentTime);
-
-        try {
-            date1 = dateFormat.parse(formedDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        showWeather(weatherDataList);
-        getWeather();
-
-
-        //getWeatherData(zipcode);
-        /*Log.d(TAG, "Current Time: " +  formedDate);
-        Log.d(TAG, "Current Time in Date instance: " +  date1);*/
-    }
-
-    private void initWeatherService() {
-        //provider = new ApiServicesProvider(UmbrellaApp.getAppComponent());
     }
 
     public void setUpRecyclerView() {
@@ -159,67 +152,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    private void getWeatherData(String zipCode) {
-        checkCelsius = SettingsAdapter.celsiusSelected();
-        Integer arrayCount = 0;
-        provider.provideWeatherService().forecastForZipCallable(zipCode).enqueue(new Callback<WeatherData>() {
-            @Override
-            public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
-                if (response.isSuccessful()) {
-                    getSupportActionBar().setTitle(response.body().getCurrentObservation().getDisplayLocation().getFullName());
-                    if (checkCelsius == true || weatherPref.getString("unitsData", "") == "Celsius") {
-                        currentWeatherTV.setText(response.body().getCurrentObservation().getTempCelsius() + "\u00B0");
-                    } else {
-                        currentWeatherTV.setText(response.body().getCurrentObservation().getTempFahrenheit() + "\u00B0");
-                    }
-
-                    currentObservation = response.body().getCurrentObservation().getIconName();
-                    skyTV.setText(currentObservation);
-                    weatherDataList = response.body().getForecast();
-                    weatherAdapter.updateDataSet(weatherDataList, currentObservation);
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-                    String formatDateTime = response.body().getForecast().get(arrayCount).getDateTime().format(formatter);
-                    String formatDateTime2;
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
-                    adapterDate = formatDateTime;
-
-                    for (int i = 0; i < weatherDataList.size(); i++) {
-                        formatDateTime2 = response.body().getForecast().get(i).getDateTime().format(formatter);
-                        try {
-                            date2 = dateFormat.parse(formatDateTime2);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        /*String newDate = dateFormat.format(date2);
-                        Log.d(TAG, "date2" +  date2);
-                        Log.d(TAG, "adapterDate: " + newDate);*/
-                    }
-
-                    /*Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
-                    Log.d(TAG, "Current Time from Adapter in Date instance: " +  date2);*/
-
-                    double result;
-                    result = parseDouble(response.body().getCurrentObservation().getTempFahrenheit());
-
-                    if (result > 60) {
-                        appBar.setBackgroundColor(getResources().getColor(R.color.weather_warm));
-                    } else if (result < 60) {
-                        appBar.setBackgroundColor(getResources().getColor(R.color.weather_cool));
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "API Error: ", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WeatherData> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Network error", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
-            }
-        });
     }
 
     @Override
@@ -270,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
                 Log.d(TAG, "Zipcode in Dialog: " + zipcode);
                 Log.d(TAG, "Zipcode in Shared Preferences within Dialog: " + weatherPref.getString("zipcodeData", ""));
-                showWeather(new ArrayList<>(0));
+                getWeather();
                 //getWeatherData(zipcode);
                 dialog.cancel();
             }
@@ -290,8 +222,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void showWeather(List<ForecastCondition> forecastList) {
-        weatherAdapter.updateDataSet(forecastList, currentObservation);
+    public void showWeather(List<ForecastCondition> forecastList, String observation) {
+        weatherAdapter.updateDataSet(forecastList, observation);
     }
 
     @Override
@@ -315,4 +247,65 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 .build()
                 .inject(this);
     }
+
+    /*private void getWeatherData(String zipCode) {
+        checkCelsius = SettingsAdapter.celsiusSelected();
+        Integer arrayCount = 0;
+        provider.provideWeatherService().forecastForZipCallable(zipCode).enqueue(new Callback<WeatherData>() {
+            @Override
+            public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
+                if (response.isSuccessful()) {
+                    getSupportActionBar().setTitle(response.body().getCurrentObservation().getDisplayLocation().getFullName());
+                    if (checkCelsius == true || weatherPref.getString("unitsData", "") == "Celsius") {
+                        currentWeatherTV.setText(response.body().getCurrentObservation().getTempCelsius() + "\u00B0");
+                    } else {
+                        currentWeatherTV.setText(response.body().getCurrentObservation().getTempFahrenheit() + "\u00B0");
+                    }
+
+                    currentObservation = response.body().getCurrentObservation().getIconName();
+                    skyTV.setText(currentObservation);
+                    weatherDataList = response.body().getForecast();
+                    weatherAdapter.updateDataSet(weatherDataList, currentObservation);
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+                    String formatDateTime = response.body().getForecast().get(arrayCount).getDateTime().format(formatter);
+                    String formatDateTime2;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
+                    adapterDate = formatDateTime;
+
+                    for (int i = 0; i < weatherDataList.size(); i++) {
+                        formatDateTime2 = response.body().getForecast().get(i).getDateTime().format(formatter);
+                        try {
+                            date2 = dateFormat.parse(formatDateTime2);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        *//*String newDate = dateFormat.format(date2);
+                        Log.d(TAG, "date2" +  date2);
+                        Log.d(TAG, "adapterDate: " + newDate);*//*
+                    }
+
+                    *//*Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
+                    Log.d(TAG, "Current Time from Adapter in Date instance: " +  date2);*//*
+
+                    double result;
+                    result = parseDouble(response.body().getCurrentObservation().getTempFahrenheit());
+
+                    if (result > 60) {
+                        appBar.setBackgroundColor(getResources().getColor(R.color.weather_warm));
+                    } else if (result < 60) {
+                        appBar.setBackgroundColor(getResources().getColor(R.color.weather_cool));
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "API Error: ", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherData> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+    }*/
 }

@@ -43,16 +43,7 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
     @Inject
     WeatherApiInteractor interactor;
 
-
-
     SharedPreferences weatherPref;
-
-    String zipcode;
-    Toolbar myToolbar;
-    List<ForecastCondition> weatherDataList;
-    RelativeLayout appBar;
-
-    private boolean checkCelsius = false;
 
     @Inject
     public MainPresenterImpl(MainView mainView, Application application) {
@@ -86,8 +77,8 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
     }
 
     @Override
-    public void onWeatherResponseDone(List<ForecastCondition> results) {
-        mainView.showWeather(results);
+    public void onWeatherResponseDone(List<ForecastCondition> results, String observation) {
+        mainView.showWeather(results, observation);
     }
 
     @Override

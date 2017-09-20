@@ -1,6 +1,7 @@
 package com.foo.umbrella.data.api;
 
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import com.foo.umbrella.R;
 import com.foo.umbrella.data.ApiServicesProvider;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
+import com.foo.umbrella.data.model.CurrentObservation;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.data.model.WeatherData;
 
@@ -39,11 +41,6 @@ public class WeatherApiInteractor {
     private WeatherService weatherServiceService;
     private OnWeatherResponseListener listener;
 
-    String zipcode;
-    Toolbar myToolbar;
-    List<ForecastCondition> weatherDataList;
-    RelativeLayout appBar;
-
     ApiServicesProvider provider;
 
     SharedPreferences weatherPref;
@@ -51,7 +48,7 @@ public class WeatherApiInteractor {
     private boolean checkCelsius = false;
 
     public interface OnWeatherResponseListener {
-        void onWeatherResponseDone(List<ForecastCondition> results);
+        void onWeatherResponseDone(List<ForecastCondition> results, String observation);
         void onWeatherResponseError();
         void obtainWeather(String observation, String weatherState,List<ForecastCondition> dataList, String datetime);
     }
@@ -64,7 +61,6 @@ public class WeatherApiInteractor {
     public void setOnWeatherResponseListener(OnWeatherResponseListener listener, Application application) {
         this.listener = listener;
         this.application = application;
-
     }
 
     public void getWeather(String zipcode, Toolbar myToolbar, List<ForecastCondition> weatherDataList, RelativeLayout appBar) {
@@ -88,7 +84,7 @@ public class WeatherApiInteractor {
 
                     weatherObservation[0] = response.body().getCurrentObservation().getIconName();
                     dataList[0] = response.body().getForecast();
-
+                    listener.onWeatherResponseDone(dataList[0], weatherObservation[0]);
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
                     String formatDateTime = response.body().getForecast().get(arrayCount).getDateTime().format(formatter);
@@ -98,17 +94,21 @@ public class WeatherApiInteractor {
 
                     listener.obtainWeather(weatherTemperature[0], weatherObservation[0],dataList[0], formatDateTime);
 
-                    for (int i = 0; i < weatherDataList.size(); i++) {
+                    /*for (int i = 0; i < weatherDataList.size(); i++) {
+                        Log.d(TAG, "onResponse: " + response.body().getCurrentObservation().getIconName().toString());
+                    }*/
+
+                    /*for (int i = 0; i < weatherDataList.size(); i++) {
                         formatDateTime2 = response.body().getForecast().get(i).getDateTime().format(formatter);
-                        /*try {
+                        *//*try {
                             date2 = dateFormat.parse(formatDateTime2);
                         } catch (ParseException e) {
                             e.printStackTrace();
-                        }*/
+                        }*//*
                         //String newDate = dateFormat.format(date2);
                         //Log.d(TAG, "date2" +  date2);
                         Log.d(TAG, "adapterDate: " + adapterDate);
-                    }
+                    }*/
 
                     /*Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
                     Log.d(TAG, "Current Time from Adapter in Date instance: " +  date2);*/

@@ -12,12 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.foo.umbrella.R;
+import com.foo.umbrella.data.model.CurrentObservation;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.WeatherMain.MainActivity;
 import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
@@ -32,6 +34,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
 
     private Context context;
     private List<ForecastCondition> weatherList;
+    private CurrentObservation observationData;
     private String currentObservation;
 
     private String formatDateTime2;
@@ -49,6 +52,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
     public WeatherAdapter(Context context, List<ForecastCondition> weatherDataList) {
         this.context = context;
         this.weatherList = weatherDataList;
+        this.observationData = observationData;
     }
 
     public WeatherAdapter(List<ForecastCondition> weatherDataList, String currentObservation) {
@@ -90,24 +94,24 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
         formatDateTime2 = weatherList.get(position).getDateTime().format(formatter2);
         Log.d(TAG, "onBindViewHolder Formed Date: " + formatDateTime2);
 
-        switch (currentObservation) {
+        switch (weatherList.get(position).getIcon()) {
             case "clear":
-                Picasso.with(holder.weather_img.getContext()).load(weatherList.get(position).getIcon()).placeholder(R.drawable.weather_sunny).into(holder.weather_img);
+                holder.weather_img.setImageResource(R.drawable.weather_sunny);
                 break;
             case "mostlycloudy":
-                Picasso.with(holder.weather_img.getContext()).load(weatherList.get(position).getIcon()).placeholder(R.drawable.weather_cloudy).into(holder.weather_img);
+                holder.weather_img.setImageResource(R.drawable.weather_cloudy);
                 break;
             case "cloudy":
-                Picasso.with(holder.weather_img.getContext()).load(weatherList.get(position).getIcon()).placeholder(R.drawable.weather_cloudy).into(holder.weather_img);
+                holder.weather_img.setImageResource(R.drawable.weather_cloudy);
                 break;
             case "partlycloudy":
-                Picasso.with(holder.weather_img.getContext()).load(weatherList.get(position).getIcon()).placeholder(R.drawable.weather_fog).into(holder.weather_img);
+                holder.weather_img.setImageResource(R.drawable.weather_fog);
                 break;
             case "chancerain":
-                Picasso.with(holder.weather_img.getContext()).load(weatherList.get(position).getIcon()).placeholder(R.drawable.weather_rainy).into(holder.weather_img);
+                holder.weather_img.setImageResource(R.drawable.weather_rainy);
                 break;
             case "rain":
-                Picasso.with(holder.weather_img.getContext()).load(weatherList.get(position).getIcon()).placeholder(R.drawable.weather_rainy).into(holder.weather_img);
+                holder.weather_img.setImageResource(R.drawable.weather_rainy);
                 break;
         }
         checkCelsius = SettingsAdapter.celsiusSelected();

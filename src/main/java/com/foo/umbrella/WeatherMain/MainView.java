@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MainView {
 
-    void showWeather(List<ForecastCondition> forecastList);
+    void showWeather(List<ForecastCondition> forecastList, String observation);
 
     void getWeather();
 

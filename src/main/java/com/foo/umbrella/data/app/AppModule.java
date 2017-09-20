@@ -3,9 +3,6 @@ package com.foo.umbrella.data.app;
 import android.app.Application;
 import android.content.Context;
 
-import com.foo.umbrella.WeatherMain.WeatherModule;
-
-import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 
@@ -15,9 +12,9 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private Application application;
+    private UmbrellaApp application;
 
-    public AppModule(Application application) {
+    public AppModule(UmbrellaApp application) {
         this.application = application;
     }
 

@@ -23,7 +23,8 @@ import com.foo.umbrella.R;
 import com.foo.umbrella.data.ApiServicesProvider;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
 import com.foo.umbrella.data.adapter.WeatherAdapter;
-import com.foo.umbrella.data.app.WeatherApp;
+import com.foo.umbrella.data.app.AppModule;
+import com.foo.umbrella.data.app.UmbrellaApp;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.data.model.WeatherData;
 import com.foo.umbrella.WeatherSettings.SettingsActivity;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     GridLayoutManager layoutManager2;
 
     @Inject
-    MainPresenter presenter;
+    MainPresenterImpl presenter;
 
     String zipcode;
 
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     private void initWeatherService() {
-        provider = new ApiServicesProvider(getApplication());
+        //provider = new ApiServicesProvider(UmbrellaApp.getAppComponent());
     }
 
     public void setUpRecyclerView() {
@@ -163,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private void getWeatherData(String zipCode) {
         checkCelsius = SettingsAdapter.celsiusSelected();
         Integer arrayCount = 0;
-        provider.getWeatherService().forecastForZipCallable(zipCode).enqueue(new Callback<WeatherData>() {
+        provider.provideWeatherService().forecastForZipCallable(zipCode).enqueue(new Callback<WeatherData>() {
             @Override
             public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
                 if (response.isSuccessful()) {
@@ -309,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private void setUpDaggerUsersComponent() {
         DaggerWeatherComponent.builder()
-                .appComponent(WeatherApp.getAppComponent())
+                .appComponent(UmbrellaApp.getAppComponent())
                 .weatherModule(new WeatherModule(this, getApplication()))
                 .build()
                 .inject(this);

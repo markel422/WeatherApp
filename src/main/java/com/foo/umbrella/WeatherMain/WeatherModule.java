@@ -3,6 +3,7 @@ package com.foo.umbrella.WeatherMain;
 import android.app.Application;
 
 import com.foo.umbrella.data.app.AppModule;
+import com.foo.umbrella.data.app.UmbrellaApp;
 
 import dagger.Component;
 import dagger.Module;
@@ -31,13 +32,13 @@ public class WeatherModule {
 
     @WeatherScope
     @Provides
-    MainView provideUsersView() {
+    MainView provideMainView() {
         return mainView;
     }
 
     @WeatherScope
     @Provides
-    public MainPresenter providesMainPresenter() {
+    public MainPresenter provideMainPresenter() {
         return new MainPresenterImpl(mainView, application);
     }
 }

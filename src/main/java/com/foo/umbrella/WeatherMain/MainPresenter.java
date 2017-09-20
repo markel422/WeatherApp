@@ -18,9 +18,11 @@ public interface MainPresenter {
 
     void init();
 
-    void getWeather();
+    void getWeather(String zipcode);
 
     void getWeather(String zipcode, Toolbar myToolbar, List<ForecastCondition> weatherDataList, RelativeLayout appBar);
+
+    void obtainWeather(String observation, String weatherState,List<ForecastCondition> dataList, String datetime);
 
     Application getApplication();
 

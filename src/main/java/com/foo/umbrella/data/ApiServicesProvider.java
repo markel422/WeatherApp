@@ -3,6 +3,7 @@ package com.foo.umbrella.data;
 import android.app.Application;
 
 import com.foo.umbrella.data.app.AppScope;
+import com.foo.umbrella.data.app.UmbrellaApp;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.foo.umbrella.data.api.WeatherService;
 import com.squareup.moshi.Moshi;
@@ -27,12 +28,13 @@ import static com.jakewharton.byteunits.DecimalByteUnit.MEGABYTES;
  */
 
 @Module
-public final class ApiServicesProvider {
+public class ApiServicesProvider {
 
     private static final int DISK_CACHE_SIZE = (int) MEGABYTES.toBytes(50);
 
     private final WeatherService weatherService;
     private final Picasso picasso;
+    private UmbrellaApp application;
 
     /**
      * Constructor.
@@ -52,19 +54,19 @@ public final class ApiServicesProvider {
                 .build();
     }
 
-    @AppScope
+    /*@AppScope
     @Provides
     public Picasso getPicasso() {
         return picasso;
     }
 
-    /**
+    *//**
      * @return an instance of the {@link WeatherService} service that is ready to use.
      */
 
     @AppScope
     @Provides
-    public WeatherService getWeatherService() {
+    public WeatherService provideWeatherService() {
         return weatherService;
     }
 
@@ -98,5 +100,11 @@ public final class ApiServicesProvider {
                 .add(new ForecastConditionAdapter())
                 .add(MoshiAdapterFactory.create())
                 .build();
+    }
+
+    @AppScope
+    @Provides
+    UmbrellaApp provideApplication() {
+        return application;
     }
 }

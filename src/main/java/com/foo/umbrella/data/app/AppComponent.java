@@ -1,8 +1,9 @@
 package com.foo.umbrella.data.app;
 
 import com.foo.umbrella.WeatherMain.MainPresenter;
-import com.foo.umbrella.WeatherMain.WeatherApiModule;
+import com.foo.umbrella.WeatherMain.WeatherModule;
 import com.foo.umbrella.data.ApiServicesProvider;
+import com.foo.umbrella.data.api.WeatherApiModule;
 import com.foo.umbrella.data.api.WeatherService;
 
 import dagger.Component;
@@ -13,8 +14,7 @@ import dagger.Component;
 @AppScope
 @Component(modules = {
         AppModule.class,
-        ApiServicesProvider.class,
-        WeatherApiModule.class})
+        ApiServicesProvider.class})
 public interface AppComponent {
 
     WeatherService weatherService();

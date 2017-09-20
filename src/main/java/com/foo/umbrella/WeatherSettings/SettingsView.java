@@ -10,6 +10,4 @@ public interface SettingsView {
 
     void getSettings();
 
-    void navigateToHome();
-
 }

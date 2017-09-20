@@ -20,7 +20,6 @@ import com.foo.umbrella.data.adapter.SettingsAdapter;
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = SettingsActivity.class.getSimpleName() + "_TAG";
-    private static final String WEATHERPREF = "weatherZipUnits";
 
     SharedPreferences weatherPref;
 

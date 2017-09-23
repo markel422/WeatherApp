@@ -1,8 +1,11 @@
-package com.foo.umbrella.data.app;
+package com.foo.umbrella;
 
 import android.app.Application;
 
 import com.foo.umbrella.data.ApiServicesProvider;
+import com.foo.umbrella.di.AppComponent;
+import com.foo.umbrella.di.AppModule;
+import com.foo.umbrella.di.DaggerAppComponent;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class UmbrellaApp extends Application {

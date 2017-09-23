@@ -1,7 +1,10 @@
-package com.foo.umbrella.data.app;
+package com.foo.umbrella.di;
 
 import android.app.Application;
 import android.content.Context;
+
+import com.foo.umbrella.UmbrellaApp;
+import com.foo.umbrella.di.scopes.AppScope;
 
 import dagger.Module;
 import dagger.Provides;

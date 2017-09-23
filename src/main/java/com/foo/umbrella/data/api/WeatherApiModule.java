@@ -1,6 +1,6 @@
 package com.foo.umbrella.data.api;
 
-import com.foo.umbrella.data.app.AppScope;
+import com.foo.umbrella.di.scopes.AppScope;
 
 import dagger.Module;
 import dagger.Provides;

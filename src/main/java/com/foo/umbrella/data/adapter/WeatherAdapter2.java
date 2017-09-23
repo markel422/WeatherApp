@@ -12,8 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.foo.umbrella.R;
-import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.main.MainActivity;
+import com.foo.umbrella.data.model.ForecastCondition;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
@@ -23,15 +23,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static java.lang.Integer.parseInt;
-
 /**
- * Created by mike0 on 9/10/2017.
+ * Created by mike0 on 9/21/2017.
  */
 
-public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder> {
+public class WeatherAdapter2 extends RecyclerView.Adapter<WeatherAdapter2.MyHolder> {
 
-    private static final String TAG = WeatherAdapter.class.getSimpleName() + "_TAG";
+
+    private static final String TAG = WeatherAdapter2.class.getSimpleName() + "_TAG";
 
     private Context context;
     private List<ForecastCondition> weatherList;
@@ -53,7 +52,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
                     R.drawable.weather_snowy, R.drawable.weather_hail, R.drawable.weather_windy_variant
             };
 
-    public WeatherAdapter(Context context, List<ForecastCondition> weatherDataList) {
+    public WeatherAdapter2(Context context, List<ForecastCondition> weatherDataList) {
         this.context = context;
         this.weatherList = weatherDataList;
     }
@@ -67,10 +66,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
         if (!weatherList.isEmpty()) {
             for (int i = 0; i < count; i++) {
                 weatherList.remove(0);
-
+                notifyItemRemoved(0);
+                notifyItemRangeChanged(count, weatherList.size());
             }
-            notifyItemRemoved(0);
-            notifyItemRangeChanged(count, weatherList.size());
         }
     }*/
 
@@ -90,16 +88,16 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
     }
 
     @Override
-    public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public WeatherAdapter2.MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_layout, null);
-        MyHolder myHolder = new MyHolder(layout);
+        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_layout2, null);
+        WeatherAdapter2.MyHolder myHolder = new WeatherAdapter2.MyHolder(layout);
 
         return myHolder;
     }
 
     @Override
-    public void onBindViewHolder(MyHolder holder, int position) {
+    public void onBindViewHolder(WeatherAdapter2.MyHolder holder, int position) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
         String formatDateTime = weatherList.get(position).getDateTime().format(formatter);
         holder.hourly_txt.setText(formatDateTime);
@@ -132,7 +130,6 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
         Log.d(TAG, "newDate: " + newDate);*/
 
         if (date2.after(date1)) {
-            //removeItemsCount(holder.getAdapterPosition());
             //Log.d(TAG, "Adapter position: " + holder.getAdapterPosition());
         }
 
@@ -173,9 +170,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyHolder
 
         public MyHolder(View itemView) {
             super(itemView);
-            hourly_txt = (TextView) itemView.findViewById(R.id.hourly_tv);
-            weather_img = (ImageView) itemView.findViewById(R.id.weather_img);
-            degrees_txt = (TextView) itemView.findViewById(R.id.hourly_degrees);
+            hourly_txt = (TextView) itemView.findViewById(R.id.hourly_tv2);
+            weather_img = (ImageView) itemView.findViewById(R.id.weather_img2);
+            degrees_txt = (TextView) itemView.findViewById(R.id.hourly_degrees2);
         }
     }
 }

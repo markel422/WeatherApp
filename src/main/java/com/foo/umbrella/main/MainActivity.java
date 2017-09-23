@@ -1,4 +1,4 @@
-package com.foo.umbrella.WeatherMain;
+package com.foo.umbrella.main;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -20,17 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.foo.umbrella.R;
-import com.foo.umbrella.data.ApiServicesProvider;
-import com.foo.umbrella.data.adapter.SettingsAdapter;
 import com.foo.umbrella.data.adapter.WeatherAdapter;
-import com.foo.umbrella.data.app.AppModule;
-import com.foo.umbrella.data.app.UmbrellaApp;
-import com.foo.umbrella.data.model.CurrentObservation;
+import com.foo.umbrella.data.adapter.WeatherAdapter2;
+import com.foo.umbrella.UmbrellaApp;
 import com.foo.umbrella.data.model.ForecastCondition;
-import com.foo.umbrella.data.model.WeatherData;
-import com.foo.umbrella.WeatherSettings.SettingsActivity;
-
-import org.threeten.bp.format.DateTimeFormatter;
+import com.foo.umbrella.settings.SettingsActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,12 +35,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import static com.foo.umbrella.R.id.appbar_layout;
-import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 
 public class MainActivity extends AppCompatActivity implements MainView {
@@ -62,13 +51,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
     TextView currentWeatherTV;
     TextView skyTV;
 
-    String currentObservation;
     List<ForecastCondition> weatherDataList;
     List<ForecastCondition> weatherDataList2;
 
     RecyclerView recyclerView;
     RecyclerView tomRecyclerView;
     WeatherAdapter weatherAdapter;
+    WeatherAdapter2 newAdapter;
 
     GridLayoutManager layoutManager;
     GridLayoutManager layoutManager2;
@@ -81,10 +70,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
     String formedDate;
     String adapterDate;
 
-    Date date1;
-    Date date2;
+    Date date1, date2;
 
-    boolean checkCelsius = false;
+    boolean checkCelsius = false,
+            dateChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setUpDaggerUsersComponent();
 
         weatherDataList = new ArrayList<>(0);
+        weatherDataList2 = new ArrayList<>(0);
 
         presenter.init();
 
@@ -116,8 +106,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        showWeather(weatherDataList, currentObservation);
-        getWeather();
+
+        presenter.getWeather(zipcode);
+        presenter.getDate(date1, date2, weatherDataList);
 
         /*Log.d(TAG, "Current Time: " +  formedDate);
         Log.d(TAG, "Current Time in Date instance: " +  date1);*/
@@ -139,11 +130,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     public void setUpRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.weather_today_recycler_view);
+        tomRecyclerView = (RecyclerView) findViewById(R.id.weather_tomorrow_recycler_view);
 
         layoutManager = new GridLayoutManager(MainActivity.this, 4);
+        layoutManager2 = new GridLayoutManager(MainActivity.this, 4);
 
         recyclerView.setLayoutManager(layoutManager);
+        tomRecyclerView.setLayoutManager(layoutManager2);
         weatherAdapter = new WeatherAdapter(MainActivity.this, new ArrayList<>(0));
+
 
         recyclerView.setAdapter(weatherAdapter);
     }
@@ -202,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
                 Log.d(TAG, "Zipcode in Dialog: " + zipcode);
                 Log.d(TAG, "Zipcode in Shared Preferences within Dialog: " + weatherPref.getString("zipcodeData", ""));
-                getWeather();
+                presenter.getWeather(zipcode);
                 //getWeatherData(zipcode);
                 dialog.cancel();
             }
@@ -222,22 +217,39 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void showWeather(List<ForecastCondition> forecastList, String observation) {
-        weatherAdapter.updateDataSet(forecastList, observation);
+    public void showWeather(List<ForecastCondition> forecastList) {
+        weatherAdapter.updateDataSet(forecastList);
+        newAdapter.updateDataSet(forecastList);
     }
 
     @Override
-    public void getWeather() {
-        presenter.getWeather(zipcode, myToolbar, weatherDataList, appBar);
-
-    }
-
-    @Override
-    public void obtainWeather(String observation, String state, List<ForecastCondition> dataList, String datetime) {
+    public void obtainWeather(String zipFullName,String observation, String state, List<ForecastCondition> dataList, String datetime) {
+        myToolbar.setTitle(zipFullName);
         currentWeatherTV.setText(observation);
         skyTV.setText(state);
         weatherDataList = dataList;
         adapterDate = datetime;
+    }
+
+    @Override
+    public void getTempState(double temperature) {
+        if (temperature >= 60) {
+            appBar.setBackgroundColor(getResources().getColor(R.color.weather_warm));
+        } else if (temperature < 60) {
+            appBar.setBackgroundColor(getResources().getColor(R.color.weather_cool));
+        }
+    }
+
+    @Override
+    public void obtainDate(Date date1, Date date2, List<ForecastCondition> dataList) {
+
+        weatherDataList2 = dataList;
+        newAdapter = new WeatherAdapter2(MainActivity.this, weatherDataList2);
+        tomRecyclerView.setAdapter(newAdapter);
+
+        //weatherAdapter.removeItemsCount(0);
+
+        dateChanged = false;
     }
 
     private void setUpDaggerUsersComponent() {

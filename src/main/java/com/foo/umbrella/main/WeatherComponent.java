@@ -1,6 +1,6 @@
-package com.foo.umbrella.WeatherMain;
+package com.foo.umbrella.main;
 
-import com.foo.umbrella.data.app.AppComponent;
+import com.foo.umbrella.di.AppComponent;
 
 import dagger.Component;
 

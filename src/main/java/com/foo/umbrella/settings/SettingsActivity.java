@@ -1,4 +1,4 @@
-package com.foo.umbrella.WeatherSettings;
+package com.foo.umbrella.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,13 +14,12 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.foo.umbrella.R;
-import com.foo.umbrella.WeatherMain.MainActivity;
+import com.foo.umbrella.main.MainActivity;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = SettingsActivity.class.getSimpleName() + "_TAG";
-    private static final String WEATHERPREF = "weatherZipUnits";
 
     SharedPreferences weatherPref;
 

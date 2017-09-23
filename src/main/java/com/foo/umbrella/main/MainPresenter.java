@@ -1,13 +1,12 @@
-package com.foo.umbrella.WeatherMain;
+package com.foo.umbrella.main;
 
 import android.app.Application;
 import android.support.v7.widget.Toolbar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.foo.umbrella.data.adapter.WeatherAdapter;
 import com.foo.umbrella.data.model.ForecastCondition;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,9 +19,7 @@ public interface MainPresenter {
 
     void getWeather(String zipcode);
 
-    void getWeather(String zipcode, Toolbar myToolbar, List<ForecastCondition> weatherDataList, RelativeLayout appBar);
-
-    void obtainWeather(String observation, String weatherState,List<ForecastCondition> dataList, String datetime);
+    void getDate(Date date1, Date date2, List<ForecastCondition> dataList);
 
     Application getApplication();
 

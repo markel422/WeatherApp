@@ -1,10 +1,8 @@
-package com.foo.umbrella.data.app;
+package com.foo.umbrella.di;
 
-import com.foo.umbrella.WeatherMain.MainPresenter;
-import com.foo.umbrella.WeatherMain.WeatherModule;
 import com.foo.umbrella.data.ApiServicesProvider;
-import com.foo.umbrella.data.api.WeatherApiModule;
 import com.foo.umbrella.data.api.WeatherService;
+import com.foo.umbrella.di.scopes.AppScope;
 
 import dagger.Component;
 

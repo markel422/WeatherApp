@@ -1,11 +1,7 @@
-package com.foo.umbrella.WeatherMain;
+package com.foo.umbrella.main;
 
 import android.app.Application;
 
-import com.foo.umbrella.data.app.AppModule;
-import com.foo.umbrella.data.app.UmbrellaApp;
-
-import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 

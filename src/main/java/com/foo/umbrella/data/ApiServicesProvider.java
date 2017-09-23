@@ -2,8 +2,8 @@ package com.foo.umbrella.data;
 
 import android.app.Application;
 
-import com.foo.umbrella.data.app.AppScope;
-import com.foo.umbrella.data.app.UmbrellaApp;
+import com.foo.umbrella.di.scopes.AppScope;
+import com.foo.umbrella.UmbrellaApp;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.foo.umbrella.data.api.WeatherService;
 import com.squareup.moshi.Moshi;

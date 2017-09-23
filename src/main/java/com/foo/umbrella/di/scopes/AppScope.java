@@ -1,4 +1,4 @@
-package com.foo.umbrella.WeatherMain;
+package com.foo.umbrella.di.scopes;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -13,5 +13,5 @@ import javax.inject.Scope;
 @Documented
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WeatherScope {
+public @interface AppScope {
 }

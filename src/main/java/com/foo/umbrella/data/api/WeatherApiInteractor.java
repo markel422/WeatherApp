@@ -1,7 +1,6 @@
 package com.foo.umbrella.data.api;
 
 import android.app.Application;
-import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
@@ -12,13 +11,16 @@ import android.widget.Toast;
 import com.foo.umbrella.R;
 import com.foo.umbrella.data.ApiServicesProvider;
 import com.foo.umbrella.data.adapter.SettingsAdapter;
-import com.foo.umbrella.data.model.CurrentObservation;
 import com.foo.umbrella.data.model.ForecastCondition;
 import com.foo.umbrella.data.model.WeatherData;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +29,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.content.ContentValues.TAG;
 import static java.lang.Double.parseDouble;
 
 /**
@@ -35,6 +36,8 @@ import static java.lang.Double.parseDouble;
  */
 
 public class WeatherApiInteractor {
+
+    private static final String TAG = WeatherApiInteractor.class.getSimpleName() + "_TAG";
 
     Application application;
 
@@ -46,11 +49,23 @@ public class WeatherApiInteractor {
     SharedPreferences weatherPref;
 
     private boolean checkCelsius = false;
+    private String formedDate;
+    private Date date1, date2;
+
+    private List<ForecastCondition> weatherData = new ArrayList<ForecastCondition>();
+
+    private List<ForecastCondition> dataList, dataList2;
 
     public interface OnWeatherResponseListener {
-        void onWeatherResponseDone(List<ForecastCondition> results, String observation);
+        void onWeatherResponseDone(List<ForecastCondition> results);
+
         void onWeatherResponseError();
-        void obtainWeather(String observation, String weatherState,List<ForecastCondition> dataList, String datetime);
+
+        void obtainWeather(String zipFullName,String observation, String weatherState, List<ForecastCondition> dataList, String datetime);
+
+        void getTempState(double temperature);
+
+        void obtainDate(Date date1, Date date2, List<ForecastCondition> dataList);
     }
 
     @Inject
@@ -63,64 +78,90 @@ public class WeatherApiInteractor {
         this.application = application;
     }
 
-    public void getWeather(String zipcode, Toolbar myToolbar, List<ForecastCondition> weatherDataList, RelativeLayout appBar) {
+    public void getWeather(String zipcode) {
         provider = new ApiServicesProvider(application);
         weatherPref = PreferenceManager.getDefaultSharedPreferences(application.getApplicationContext());
         checkCelsius = SettingsAdapter.celsiusSelected();
+        final String[] zipName = new String[1];
         final String[] weatherTemperature = new String[1];
         final String[] weatherObservation = new String[1];
-        final List<ForecastCondition>[] dataList = new List[1];
-        Integer arrayCount = 0;
         provider.provideWeatherService().forecastForZipCallable(zipcode).enqueue(new Callback<WeatherData>() {
             @Override
             public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
                 if (response.isSuccessful()) {
-                    myToolbar.setTitle(response.body().getCurrentObservation().getDisplayLocation().getFullName());
+                    zipName[0] = response.body().getCurrentObservation().getDisplayLocation().getFullName();
                     if (checkCelsius == true || weatherPref.getString("unitsData", "") == "Celsius") {
                         weatherTemperature[0] = response.body().getCurrentObservation().getTempCelsius() + "\u00B0";
                     } else {
                         weatherTemperature[0] = response.body().getCurrentObservation().getTempFahrenheit() + "\u00B0";
                     }
 
+                    weatherData.addAll(response.body().getForecast());
+
                     weatherObservation[0] = response.body().getCurrentObservation().getIconName();
-                    dataList[0] = response.body().getForecast();
-                    listener.onWeatherResponseDone(dataList[0], weatherObservation[0]);
+
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-                    String formatDateTime = response.body().getForecast().get(arrayCount).getDateTime().format(formatter);
+                    String formatDateTime = response.body().getForecast().get(0).getDateTime().format(formatter);
                     String formatDateTime2;
                     SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
-                    String adapterDate = formatDateTime;
 
-                    listener.obtainWeather(weatherTemperature[0], weatherObservation[0],dataList[0], formatDateTime);
+                    Date currentTime = Calendar.getInstance().getTime();
+                    formedDate = dateFormat.format(currentTime);
 
-                    /*for (int i = 0; i < weatherDataList.size(); i++) {
-                        Log.d(TAG, "onResponse: " + response.body().getCurrentObservation().getIconName().toString());
-                    }*/
+                    try {
+                        date1 = dateFormat.parse(formedDate);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
 
-                    /*for (int i = 0; i < weatherDataList.size(); i++) {
-                        formatDateTime2 = response.body().getForecast().get(i).getDateTime().format(formatter);
-                        *//*try {
+                    Log.d(TAG, "Current Time: " + formedDate);
+                    Log.d(TAG, "date1: " + date1);
+
+                    boolean checkCurrentDate = false;
+                    int currentDateIndex = 0;
+                    boolean checkNewDate = false;
+                    int newDateIndex = 0;
+                    int subtractDate = 12;
+
+                    for (int i = 0; i < weatherData.size(); i++) {
+                        formatDateTime2 = weatherData.get(i).getDateTime().format(formatter);
+                        try {
                             date2 = dateFormat.parse(formatDateTime2);
                         } catch (ParseException e) {
                             e.printStackTrace();
-                        }*//*
-                        //String newDate = dateFormat.format(date2);
-                        //Log.d(TAG, "date2" +  date2);
-                        Log.d(TAG, "adapterDate: " + adapterDate);
-                    }*/
+                        }
+                        //String newDateIndex = dateFormat.format(date2);
+                        Log.d(TAG, "date2: " + date2);
+                        //Log.d(TAG, "adapterDate: " + adapterDate);
 
-                    /*Log.d(TAG, "Current Time from Adapter: " +  adapterDate);
-                    Log.d(TAG, "Current Time from Adapter in Date instance: " +  date2);*/
+                        if (date1.before(date2)) {
+                            if (checkCurrentDate == false) {
+                                checkCurrentDate = true;
+                                currentDateIndex = i;
+                            }
+                            dataList = weatherData.subList(0, currentDateIndex);
+                            listener.onWeatherResponseDone(dataList);
+                        }
+                        listener.obtainWeather(zipName[0], weatherTemperature[0], weatherObservation[0], dataList, formatDateTime);
+
+                        if (date2.after(date1)) {
+                            if (checkNewDate == false) {
+                                checkNewDate = true;
+                                newDateIndex = i;
+                                subtractDate = subtractDate - newDateIndex;
+                            }
+                            //Log.d(TAG, "newDateIndex: " + newDateIndex);
+                            dataList2 = weatherData.subList(newDateIndex, weatherData.size() - subtractDate);
+                            getDate(date1, date2, dataList2);
+                        }
+                    }
 
                     double result;
                     result = parseDouble(response.body().getCurrentObservation().getTempFahrenheit());
 
-                    if (result > 60) {
-                        appBar.setBackgroundColor(application.getResources().getColor(R.color.weather_warm));
-                    } else if (result < 60) {
-                        appBar.setBackgroundColor(application.getResources().getColor(R.color.weather_cool));
-                    }
+                    listener.getTempState(result);
+
                 } else {
                     Toast.makeText(application.getApplicationContext(), "API Error: ", Toast.LENGTH_SHORT).show();
                 }
@@ -132,5 +173,9 @@ public class WeatherApiInteractor {
                 t.printStackTrace();
             }
         });
+    }
+
+    public void getDate(Date date1, Date date2, List<ForecastCondition> dataList) {
+        listener.obtainDate(date1, date2, dataList);
     }
 }

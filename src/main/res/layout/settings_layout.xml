@@ -3,7 +3,8 @@
     android:id="@+id/linear_settings_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/settings_title_tv"

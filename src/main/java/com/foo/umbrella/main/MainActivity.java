@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         tomRecyclerView.setLayoutManager(layoutManager2);
         weatherAdapter = new WeatherAdapter(MainActivity.this, new ArrayList<>(0));
 
-
         recyclerView.setAdapter(weatherAdapter);
     }
 

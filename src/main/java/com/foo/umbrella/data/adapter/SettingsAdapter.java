@@ -51,8 +51,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
     @Override
     public SettingsAdapter.MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View layout = LayoutInflater.from(context).inflate(R.layout.settings_layout, null);
-        SettingsAdapter.MyHolder myHolder = new SettingsAdapter.MyHolder(layout);
+        View layout = LayoutInflater.from(context).inflate(R.layout.settings_layout, null, false);
+        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layout.setLayoutParams(lp);
+        MyHolder myHolder = new MyHolder(layout);
 
         return myHolder;
     }

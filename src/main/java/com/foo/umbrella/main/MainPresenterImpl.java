@@ -59,6 +59,11 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
     }
 
     @Override
+    public void getLastHour(int hour) {
+        mainView.getLastHour(hour);
+    }
+
+    @Override
     public void obtainDate(Date date1, Date date2, List<ForecastCondition> dataList) {
         mainView.obtainDate(date1, date2, dataList);
     }

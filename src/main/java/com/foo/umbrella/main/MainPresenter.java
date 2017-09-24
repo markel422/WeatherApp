@@ -21,6 +21,8 @@ public interface MainPresenter {
 
     void getDate(Date date1, Date date2, List<ForecastCondition> dataList);
 
+    void getLastHour(int hour);
+
     Application getApplication();
 
 }

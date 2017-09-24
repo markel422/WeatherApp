@@ -52,6 +52,8 @@ public class WeatherApiInteractor {
     private String formedDate;
     private Date date1, date2;
 
+    private final int HALFDAY = 12;
+
     private List<ForecastCondition> weatherData = new ArrayList<ForecastCondition>();
 
     private List<ForecastCondition> dataList, dataList2;
@@ -64,6 +66,8 @@ public class WeatherApiInteractor {
         void obtainWeather(String zipFullName,String observation, String weatherState, List<ForecastCondition> dataList, String datetime);
 
         void getTempState(double temperature);
+
+        void getLastHour(int hour);
 
         void obtainDate(Date date1, Date date2, List<ForecastCondition> dataList);
     }
@@ -122,7 +126,7 @@ public class WeatherApiInteractor {
                     int currentDateIndex = 0;
                     boolean checkNewDate = false;
                     int newDateIndex = 0;
-                    int subtractDate = 12;
+                    int subtractDate = HALFDAY;
 
                     for (int i = 0; i < weatherData.size(); i++) {
                         formatDateTime2 = weatherData.get(i).getDateTime().format(formatter);
@@ -140,6 +144,10 @@ public class WeatherApiInteractor {
                                 checkCurrentDate = true;
                                 currentDateIndex = i;
                             }
+                            if (currentDateIndex == 0) {
+                                listener.getLastHour(currentDateIndex);
+                            }
+                            //Log.d(TAG, "currentDateIndex: " + currentDateIndex);
                             dataList = weatherData.subList(0, currentDateIndex);
                             listener.onWeatherResponseDone(dataList);
                         }
@@ -149,9 +157,15 @@ public class WeatherApiInteractor {
                             if (checkNewDate == false) {
                                 checkNewDate = true;
                                 newDateIndex = i;
+                                if (newDateIndex > HALFDAY) {
+                                    subtractDate = subtractDate + HALFDAY;
+                                } else {
+                                    subtractDate = HALFDAY;
+                                }
                                 subtractDate = subtractDate - newDateIndex;
                             }
-                            //Log.d(TAG, "newDateIndex: " + newDateIndex);
+                            /*Log.d(TAG, "newDateIndex: " + newDateIndex);
+                            Log.d(TAG, "subtractDate: " + subtractDate);*/
                             dataList2 = weatherData.subList(newDateIndex, weatherData.size() - subtractDate);
                             getDate(date1, date2, dataList2);
                         }

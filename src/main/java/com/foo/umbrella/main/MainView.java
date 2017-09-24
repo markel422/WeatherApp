@@ -19,6 +19,8 @@ public interface MainView {
 
     void getTempState(double temperature);
 
+    void getLastHour(int hour);
+
     void obtainDate(Date date1, Date date2, List<ForecastCondition> dataList);
 
 }

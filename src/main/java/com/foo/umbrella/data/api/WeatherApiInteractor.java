@@ -39,9 +39,10 @@ public class WeatherApiInteractor {
 
     private static final String TAG = WeatherApiInteractor.class.getSimpleName() + "_TAG";
 
+    WeatherService weatherServiceService;
+
     Application application;
 
-    private WeatherService weatherServiceService;
     private OnWeatherResponseListener listener;
 
     ApiServicesProvider provider;
@@ -69,6 +70,8 @@ public class WeatherApiInteractor {
         void getLastHour(int hour);
 
         void obtainDate(Date date1, Date date2, List<ForecastCondition> dataList);
+
+        void setZipcodeError();
     }
 
     @Inject

@@ -35,6 +35,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
     private Context context;
     private String settings_title[];
     private String settings[];
+
+    private EditText zipcodeTV;
+
     SharedPreferences weatherPref;
 
     public SettingsAdapter() {
@@ -75,21 +78,25 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
                         // Get the layout inflater
                         dialog.show();
 
-                        EditText zipcodeTV = (EditText) dialog.findViewById(R.id.zipcode_tv);
+                        zipcodeTV = (EditText) dialog.findViewById(R.id.zipcode_tv);
                         Button okBtn = (Button) dialog.findViewById(R.id.btn_ok);
                         Button cancelBtn = (Button) dialog.findViewById(R.id.btn_cancel);
 
                         okBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                holder.settings_txt.setText(zipcodeTV.getText().toString());
+                                if (zipcodeTV.length() < 5) {
+                                    zipcodeTV.setError(context.getString(R.string.zip_error));
+                                } else {
+                                    holder.settings_txt.setText(zipcodeTV.getText().toString());
 
-                                SharedPreferences.Editor editor = weatherPref.edit();
-                                editor.putString("zipcodeData", holder.settings_txt.getText().toString());
-                                editor.apply();
+                                    SharedPreferences.Editor editor = weatherPref.edit();
+                                    editor.putString("zipcodeData", holder.settings_txt.getText().toString());
+                                    editor.apply();
 
-                                Toast.makeText(context, "Zipcode Changed to " + holder.settings_txt.getText().toString(), Toast.LENGTH_SHORT).show();
-                                dialog.cancel();
+                                    Toast.makeText(context, "Zipcode Changed to " + holder.settings_txt.getText().toString(), Toast.LENGTH_SHORT).show();
+                                    dialog.cancel();
+                                }
                             }
                         });
 

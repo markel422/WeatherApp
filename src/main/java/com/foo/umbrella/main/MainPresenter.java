@@ -17,12 +17,12 @@ public interface MainPresenter {
 
     void init();
 
+    void checkZipcode(String zipcode);
+
     void getWeather(String zipcode);
 
     void getDate(Date date1, Date date2, List<ForecastCondition> dataList);
 
     void getLastHour(int hour);
-
-    Application getApplication();
 
 }

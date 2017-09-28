@@ -13,7 +13,7 @@ public interface MainView {
 
     void showWeather(List<ForecastCondition> forecastList);
 
-    void showError();
+    void setZipcodeError();
 
     void obtainWeather(String zipFullName, String observation, String weatherState,List<ForecastCondition> dataList, String datetime);
 

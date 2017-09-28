@@ -1,10 +1,12 @@
 package com.foo.umbrella.main;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     CardView todayCard;
 
+    EditText zipcodeTV;
+
     TextView currentWeatherTV;
     TextView skyTV;
 
@@ -91,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
         currentWeatherTV = (TextView) findViewById(R.id.current_weather_tv);
         skyTV = (TextView) findViewById(R.id.current_sky_tv);
 
+        /*SharedPreferences.Editor editor = weatherPref.edit();
+        editor.remove("zipcodeData");
+        editor.apply();
+
+        zipcode = null;*/
+
         checkSharedPref();
 
         getInitialWeatherData();
@@ -100,8 +110,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         weatherDataList = new ArrayList<>(0);
         weatherDataList2 = new ArrayList<>(0);
-
-        presenter.init();
 
         Date currentTime = Calendar.getInstance().getTime();
         SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd/yyyy");
@@ -113,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             e.printStackTrace();
         }
 
+        presenter.init();
         presenter.getWeather(zipcode);
         presenter.getDate(date1, date2, weatherDataList);
 
@@ -168,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         switch (item.getItemId()) {
             case R.id.action_settings_button:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                if (weatherPref.getString("unitsData", "") !=  null) {
+                if (weatherPref.getString("unitsData", "") != null) {
                     if (weatherPref.getString("unitsData", "").equals("Celsius")) {
                         SharedPreferences.Editor editor = weatherPref.edit();
                         editor.putString("unitsData", "Celsius");
@@ -191,12 +200,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     public void getInitialZipcode() {
         Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.setTitle("Enter A Zipcode");
         dialog.setContentView(R.layout.dialog_zipcode);
         // Get the layout inflater
         dialog.show();
 
-        final EditText zipcodeTV = (EditText) dialog.findViewById(R.id.zipcode_tv);
+        zipcodeTV = (EditText) dialog.findViewById(R.id.zipcode_tv);
         Button okBtn = (Button) dialog.findViewById(R.id.btn_ok);
         Button cancelBtn = (Button) dialog.findViewById(R.id.btn_cancel);
 
@@ -204,38 +214,57 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void onClick(View v) {
                 zipcode = zipcodeTV.getText().toString();
-                Toast.makeText(MainActivity.this, "Zipcode Changed", Toast.LENGTH_SHORT).show();
 
-                SharedPreferences.Editor editor = weatherPref.edit();
+                if (zipcode.length() < 5) {
+                    presenter.checkZipcode(zipcode);
+                } else {
+                    SharedPreferences.Editor editor = weatherPref.edit();
 
-                editor.putString("zipcodeData", zipcode);
-                editor.apply();
+                    editor.putString("zipcodeData", zipcode);
+                    editor.apply();
 
-                Log.d(TAG, "Zipcode in Dialog: " + zipcode);
-                Log.d(TAG, "Zipcode in Shared Preferences within Dialog: " + weatherPref.getString("zipcodeData", ""));
-                presenter.getWeather(zipcode);
-                //getWeatherData(zipcode);
-                dialog.cancel();
+                    Log.d(TAG, "Zipcode in Dialog: " + zipcode);
+                    Log.d(TAG, "Zipcode in Shared Preferences within Dialog: " + weatherPref.getString("zipcodeData", ""));
+
+                    presenter.init();
+                    presenter.getWeather(zipcode);
+                    presenter.getDate(date1, date2, weatherDataList);
+                    Toast.makeText(MainActivity.this, "Zipcode Entered", Toast.LENGTH_SHORT).show();
+                    //getWeatherData(zipcode);
+                    dialog.cancel();
+                }
             }
         });
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.cancel();
+
+                new AlertDialog.Builder(dialog.getContext())
+                        .setMessage("A zipcode must be entered to proceed.\n\nAre you sure you want to exit?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+
+                //dialog.cancel();
             }
         });
-    }
-
-    @Override
-    public void showError() {
-        Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showWeather(List<ForecastCondition> forecastList) {
         weatherAdapter.updateDataSet(forecastList);
         newAdapter.updateDataSet(forecastList);
+    }
+
+    @Override
+    public void setZipcodeError() {
+        zipcodeTV.setError(getString(R.string.zip_error));
     }
 
     @Override

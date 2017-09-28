@@ -75,13 +75,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     Date date1, date2;
 
-    boolean checkCelsius = false,
-            dateChanged = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         appBar = (RelativeLayout) findViewById(appbar_layout);
         myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -91,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         currentWeatherTV = (TextView) findViewById(R.id.current_weather_tv);
         skyTV = (TextView) findViewById(R.id.current_sky_tv);
+
+        checkSharedPref();
 
         getInitialWeatherData();
 
@@ -119,13 +120,21 @@ public class MainActivity extends AppCompatActivity implements MainView {
         Log.d(TAG, "Current Time in Date instance: " +  date1);*/
     }
 
+    public void checkSharedPref() {
+        if (weatherPref.getString("unitsData", "") == null) {
+            SharedPreferences.Editor editor = weatherPref.edit();
+            editor.putString("unitsData", "Fahrenheit");
+            editor.apply();
+        }
+    }
+
     public void getInitialWeatherData() {
-        weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         String newValue = weatherPref.getString("zipcodeData", "");
 
-        if (zipcode == null && newValue == "") {
+        if (zipcode == null && newValue.equals("")) {
             getInitialZipcode();
-        } else if (zipcode == null && newValue != "") {
+        } else if (zipcode == null && !newValue.equals("")) {
             zipcode = newValue;
             Log.d(TAG, "onCreate: " + zipcode);
         }
@@ -159,13 +168,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
         switch (item.getItemId()) {
             case R.id.action_settings_button:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                if (checkCelsius == true) {
-                    weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor editor = weatherPref.edit();
-                    editor.putString("unitsData", "Celsius");
-                    editor.apply();
+                if (weatherPref.getString("unitsData", "") !=  null) {
+                    if (weatherPref.getString("unitsData", "").equals("Celsius")) {
+                        SharedPreferences.Editor editor = weatherPref.edit();
+                        editor.putString("unitsData", "Celsius");
+                        editor.apply();
+                    } else if (weatherPref.getString("unitsData", "").equals("Fahrenheit")) {
+                        SharedPreferences.Editor editor = weatherPref.edit();
+                        editor.putString("unitsData", "Fahrenheit");
+                        editor.apply();
+                    }
                 } else {
-                    weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor editor = weatherPref.edit();
                     editor.putString("unitsData", "Fahrenheit");
                     editor.apply();
@@ -193,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 zipcode = zipcodeTV.getText().toString();
                 Toast.makeText(MainActivity.this, "Zipcode Changed", Toast.LENGTH_SHORT).show();
 
-                weatherPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = weatherPref.edit();
 
                 editor.putString("zipcodeData", zipcode);
@@ -261,8 +273,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         tomRecyclerView.setAdapter(newAdapter);
 
         //weatherAdapter.removeItemsCount(0);
-
-        dateChanged = false;
     }
 
     private void setUpDaggerUsersComponent() {

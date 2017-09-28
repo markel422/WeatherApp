@@ -21,8 +21,6 @@ public class MainPresenterImpl implements MainPresenter, WeatherApiInteractor.On
     MainView mainView;
     private Application application;
 
-    List<ForecastCondition> dataList;
-
     @Inject
     WeatherApiInteractor interactor;
 

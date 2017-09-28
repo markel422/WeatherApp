@@ -22,6 +22,8 @@ import com.foo.umbrella.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Created by mike0 on 9/10/2017.
  */
@@ -33,7 +35,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
     private Context context;
     private String settings_title[];
     private String settings[];
-    private static boolean isCelsius = false;
+    SharedPreferences weatherPref;
 
     public SettingsAdapter() {
     }
@@ -42,10 +44,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
         this.context = context;
         this.settings_title = setting_title;
         this.settings = setting;
-    }
-
-    public static boolean celsiusSelected() {
-        return isCelsius;
     }
 
     @Override
@@ -61,6 +59,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
 
     @Override
     public void onBindViewHolder(MyHolder holder, int position) {
+        weatherPref = PreferenceManager.getDefaultSharedPreferences(context);
 
         holder.settings_title_txt.setText(settings_title[position]);
         holder.settings_txt.setText(settings[position]);
@@ -68,7 +67,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(context, "Clicked " + holder.settings_title_txt.getText().toString(), Toast.LENGTH_SHORT).show();
                 switch (holder.settings_title_txt.getText().toString()) {
                     case "Zip":
                         Dialog dialog = new Dialog(context);
@@ -86,13 +84,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
                             public void onClick(View v) {
                                 holder.settings_txt.setText(zipcodeTV.getText().toString());
 
-                                SharedPreferences weatherPref = PreferenceManager.getDefaultSharedPreferences(context);
                                 SharedPreferences.Editor editor = weatherPref.edit();
                                 editor.putString("zipcodeData", holder.settings_txt.getText().toString());
                                 editor.apply();
-                                Log.d(TAG, "onClick in SettingsAdapter: " + weatherPref.getString("zipcodeData", ""));
 
-                                Toast.makeText(context, "Zipcode Changed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Zipcode Changed to " + holder.settings_txt.getText().toString(), Toast.LENGTH_SHORT).show();
                                 dialog.cancel();
                             }
                         });
@@ -105,20 +101,19 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
                         });
                         break;
                     case "Units":
+
                         dialog = new Dialog(context);
                         dialog.setTitle("Choose Units of Temperature");
                         dialog.setContentView(R.layout.units_radiobutton_layout);
-                        List<String> stringList = new ArrayList<>();  // here is list
-                        stringList.add("Fahrenheit");
-                        stringList.add("Celsius");
 
                         RadioGroup rg = (RadioGroup) dialog.findViewById(R.id.radio_group);
-                        RadioButton rb;
+                        RadioButton rbFah = (RadioButton) dialog.findViewById(R.id.radio_fahrenheit);
+                        RadioButton rbCel = (RadioButton) dialog.findViewById(R.id.radio_celsius);
 
-                        for (int i = 0; i < stringList.size(); i++) {
-                            rb = new RadioButton(context); // dynamically creating RadioButton and adding to RadioGroup.
-                            rb.setText(stringList.get(i));
-                            rg.addView(rb);
+                        if (weatherPref.getString("unitsData", "").equals("Fahrenheit")) {
+                            rbFah.setChecked(true);
+                        } else if (weatherPref.getString("unitsData", "").equals("Celsius")) {
+                            rbCel.setChecked(true);
                         }
 
                         dialog.show();
@@ -130,29 +125,23 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyHold
                             public void onClick(View v) {
                                 int selectedId = rg.getCheckedRadioButtonId();
 
-                                SharedPreferences unitsPref = PreferenceManager.getDefaultSharedPreferences(context);
-                                SharedPreferences.Editor editor = unitsPref.edit();
+                                SharedPreferences.Editor editor = weatherPref.edit();
 
                                 // find the radiobutton by returned id
                                 RadioButton radioButton = (RadioButton) dialog.findViewById(selectedId);
 
-                                if (radioButton.getText().toString() == "Celsius") {
-                                    isCelsius = true;
+                                if (radioButton.getText().toString().equals("Celsius")) {
                                     editor.putString("unitsData", radioButton.getText().toString());
                                     editor.putBoolean("unitsBool", true);
                                     editor.apply();
-                                } else if (radioButton.getText().toString() == "Fahrenheit") {
-                                    isCelsius = false;
+                                } else if (radioButton.getText().toString().equals("Fahrenheit")) {
                                     editor.putString("unitsData", radioButton.getText().toString());
                                     editor.putBoolean("unitsBool", false);
                                     editor.apply();
-                                } else {
-                                    holder.settings_txt.setText(unitsPref.getString("unitsData", ""));
                                 }
 
                                 holder.settings_txt.setText(radioButton.getText().toString());
-                                Toast.makeText(context, "Units Changed", Toast.LENGTH_SHORT).show();
-                                Toast.makeText(context, "Units: " + radioButton.getText(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Units Changed to " + radioButton.getText(), Toast.LENGTH_SHORT).show();
 
                                 dialog.cancel();
                             }

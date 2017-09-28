@@ -14,8 +14,6 @@ import rx.Observable;
  */
 public interface WeatherService {
 
-    final String BASE_URL = "http://api.wunderground.com";
-
     final static String API_KEY = "fcbcaba038c4bfd9";
 
     /**

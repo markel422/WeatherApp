@@ -48,7 +48,6 @@ public class WeatherApiInteractor {
 
     SharedPreferences weatherPref;
 
-    private boolean checkCelsius = false;
     private String formedDate;
     private Date date1, date2;
 
@@ -63,7 +62,7 @@ public class WeatherApiInteractor {
 
         void onWeatherResponseError();
 
-        void obtainWeather(String zipFullName,String observation, String weatherState, List<ForecastCondition> dataList, String datetime);
+        void obtainWeather(String zipFullName, String observation, String weatherState, List<ForecastCondition> dataList, String datetime);
 
         void getTempState(double temperature);
 
@@ -85,7 +84,6 @@ public class WeatherApiInteractor {
     public void getWeather(String zipcode) {
         provider = new ApiServicesProvider(application);
         weatherPref = PreferenceManager.getDefaultSharedPreferences(application.getApplicationContext());
-        checkCelsius = SettingsAdapter.celsiusSelected();
         final String[] zipName = new String[1];
         final String[] weatherTemperature = new String[1];
         final String[] weatherObservation = new String[1];
@@ -94,7 +92,7 @@ public class WeatherApiInteractor {
             public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
                 if (response.isSuccessful()) {
                     zipName[0] = response.body().getCurrentObservation().getDisplayLocation().getFullName();
-                    if (checkCelsius == true || weatherPref.getString("unitsData", "") == "Celsius") {
+                    if (weatherPref.getString("unitsData", "").equals("Celsius")) {
                         weatherTemperature[0] = response.body().getCurrentObservation().getTempCelsius() + "\u00B0";
                     } else {
                         weatherTemperature[0] = response.body().getCurrentObservation().getTempFahrenheit() + "\u00B0";
@@ -127,7 +125,7 @@ public class WeatherApiInteractor {
                     boolean checkNewDate = false;
                     int newDateIndex = 0;
                     int subtractDate = HALFDAY;
-
+                    int subtractPlusDate = 0;
                     for (int i = 0; i < weatherData.size(); i++) {
                         formatDateTime2 = weatherData.get(i).getDateTime().format(formatter);
                         try {
@@ -159,13 +157,19 @@ public class WeatherApiInteractor {
                                 newDateIndex = i;
                                 if (newDateIndex > HALFDAY) {
                                     subtractDate = subtractDate + HALFDAY;
+                                    subtractPlusDate = subtractDate - newDateIndex;
+                                    subtractDate = subtractDate - newDateIndex - subtractPlusDate;
                                 } else {
                                     subtractDate = HALFDAY;
+                                    subtractDate = subtractDate - newDateIndex;
                                 }
-                                subtractDate = subtractDate - newDateIndex;
+
+
+                                //subtractDate = subtractDate + (weatherData.size() - subtractDate);
                             }
                             /*Log.d(TAG, "newDateIndex: " + newDateIndex);
-                            Log.d(TAG, "subtractDate: " + subtractDate);*/
+                            Log.d(TAG, "subtractDate: " + subtractDate);
+                            Log.d(TAG, "fullDate - subtractDate: " + (weatherData.size() - subtractDate));*/
                             dataList2 = weatherData.subList(newDateIndex, weatherData.size() - subtractDate);
                             getDate(date1, date2, dataList2);
                         }
@@ -184,6 +188,7 @@ public class WeatherApiInteractor {
             @Override
             public void onFailure(Call<WeatherData> call, Throwable t) {
                 Toast.makeText(application.getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
+                listener.onWeatherResponseError();
                 t.printStackTrace();
             }
         });

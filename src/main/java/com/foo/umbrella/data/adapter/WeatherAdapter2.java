@@ -42,7 +42,6 @@ public class WeatherAdapter2 extends RecyclerView.Adapter<WeatherAdapter2.MyHold
 
     private String newDate;
 
-    private boolean checkCelsius = false;
     SharedPreferences weatherPref;
 
     private int iconId[] =
@@ -98,6 +97,8 @@ public class WeatherAdapter2 extends RecyclerView.Adapter<WeatherAdapter2.MyHold
 
     @Override
     public void onBindViewHolder(WeatherAdapter2.MyHolder holder, int position) {
+        weatherPref = PreferenceManager.getDefaultSharedPreferences(context);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
         String formatDateTime = weatherList.get(position).getDateTime().format(formatter);
         holder.hourly_txt.setText(formatDateTime);
@@ -153,10 +154,8 @@ public class WeatherAdapter2 extends RecyclerView.Adapter<WeatherAdapter2.MyHold
                 holder.weather_img.setImageResource(R.drawable.weather_rainy);
                 break;
         }
-        checkCelsius = SettingsAdapter.celsiusSelected();
-        weatherPref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (checkCelsius == true || weatherPref.getString("unitsData", "") == "Celsius") {
+        if (weatherPref.getString("unitsData", "").equals("Celsius")) {
             holder.degrees_txt.setText(weatherList.get(position).getTempCelsius() + "\u00B0");
         } else {
             holder.degrees_txt.setText(weatherList.get(position).getTempFahrenheit() + "\u00B0");
